@@ -22,17 +22,20 @@ This is a simple AI chatbot web app built with Flask and Cohere API. Users can e
 
 2. Install the dependencies:
 
+   ```bash
    pip install -r requirements.txt
 
-3. Add your Cohere API key in a .env file:
+4. Add your Cohere API key in a .env file:
 
+   ```bash
    COHERE_API_KEY=your-api-key-here
 
-4. Start the Flask app:
+6. Start the Flask app:
 
+   ```bash
    python app.py
 
-5. Open your browser and go to http://127.0.0.1:5000
+8. Open your browser and go to http://127.0.0.1:5000
 
 ## Technologies Used
 
@@ -41,5 +44,6 @@ This is a simple AI chatbot web app built with Flask and Cohere API. Users can e
 - HTML/CSS/JavaScript
 - Deployed on Render
 
-![Ai wrapper tool website](https://github.com/user-attachments/assets/176a6dc1-e6e2-4627-915d-70a03f808d3e)
+
+![Ai chat](https://github.com/user-attachments/assets/3cf68db8-5c25-48ff-b8ff-ccc3a3fa660b)
 
