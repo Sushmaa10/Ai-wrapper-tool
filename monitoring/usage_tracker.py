@@ -1,36 +1,59 @@
-from datetime import datetime
 import sqlite3
+from datetime import datetime
 from pathlib import Path
+import logging
 
-# Database configuration
+# ----------------------------
+# Setup Logging
+# ----------------------------
+LOG_DIR = Path(__file__).parent.parent / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+logging.basicConfig(
+    filename=LOG_DIR / 'usage_errors.log',
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# ----------------------------
+# Database Configuration
+# ----------------------------
 DB_PATH = Path(__file__).parent.parent / 'data' / 'usage.db'
-DB_PATH.parent.mkdir(exist_ok=True)  # Ensure directory exists
+DB_PATH.parent.mkdir(exist_ok=True)
 
-def track_usage(user_id: str, model_used: str, token_count: int):
+# ----------------------------
+# Main Usage Tracker Function
+# ----------------------------
+def track_usage(user_id: str, model_used: str, token_count: int) -> None:
     """
-    Logs API usage to SQLite database
+    Logs API usage into a SQLite database.
+
     Args:
-        user_id: Unique identifier for the user
-        model_used: Which model processed the request
-        token_count: Number of tokens consumed
+        user_id (str): Unique user identifier (can be "anonymous" if unknown).
+        model_used (str): Name of the AI model used (e.g., 'cohere').
+        token_count (int): Number of tokens processed.
     """
     try:
-        conn = sqlite3.connect(DB_PATH)
-        c = conn.cursor()
-        
-        # Create table if not exists
-        c.execute('''CREATE TABLE IF NOT EXISTS usage 
-                    (user_id TEXT, model TEXT, tokens INTEGER, 
-                     timestamp TEXT)''')
-        
-        # Insert record
-        c.execute('''INSERT INTO usage VALUES (?, ?, ?, ?)''',
-                 (user_id, model_used, token_count, 
-                  datetime.now().isoformat()))
-        
-        conn.commit()
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.cursor()
+
+            # Ensure table exists
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS usage (
+                    user_id TEXT,
+                    model TEXT,
+                    tokens INTEGER,
+                    timestamp TEXT
+                )
+            ''')
+
+            # Insert usage log
+            cursor.execute('''
+                INSERT INTO usage (user_id, model, tokens, timestamp)
+                VALUES (?, ?, ?, ?)
+            ''', (user_id, model_used, token_count, datetime.now().isoformat()))
+
+            conn.commit()
+
     except Exception as e:
-        # Consider adding error logging here
-        raise Exception(f"Usage tracking failed: {str(e)}")
-    finally:
-        conn.close()
+        logging.error(f"Failed to log usage: {str(e)}")
+        raise RuntimeError("An error occurred while tracking usage.")
