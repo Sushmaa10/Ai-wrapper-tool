@@ -39,12 +39,12 @@ This is a simple AI chatbot web app built with Flask and Cohere API. Users can e
 
 5. Run with Docker(recommended):
 
-   - Build the Docker image:
+- Build the Docker image:
      
    ```bash
    docker build -t ai-wrapper .
 
-   - Run the Docker container with your .env file:   
+- Run the Docker container with your .env file:   
 
    ```bash
    docker run --env-file .env -p 5000:5000 ai-wrapper
